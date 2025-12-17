@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Zhihu AI Summary",
+  "version": "0.1.0",
+  "description": "Add an \"AI总结\" button for each Zhihu answer and summarize the answer with an AI provider.",
+  "action": {
+    "default_title": "Zhihu AI Summary"
+  },
+  "options_page": "options.html",
+  "permissions": ["storage"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.zhihu.com/question/*"],
+      "js": ["src/contentScript.js"],
+      "css": ["src/contentStyles.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

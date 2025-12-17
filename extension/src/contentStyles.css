@@ -1,0 +1,43 @@
+:root {
+  --zhihu-ai-summary-border: rgba(18, 18, 18, 0.12);
+  --zhihu-ai-summary-bg: rgba(18, 18, 18, 0.02);
+  --zhihu-ai-summary-fg: rgba(18, 18, 18, 0.9);
+  --zhihu-ai-summary-muted: rgba(18, 18, 18, 0.6);
+}
+
+.zhihu-ai-summary-btn {
+  margin-left: 6px;
+}
+
+.zhihu-ai-summary-box {
+  border: 1px solid var(--zhihu-ai-summary-border);
+  background: var(--zhihu-ai-summary-bg);
+  color: var(--zhihu-ai-summary-fg);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.zhihu-ai-summary-box__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.zhihu-ai-summary-box__title {
+  font-weight: 600;
+}
+
+.zhihu-ai-summary-box__meta {
+  color: var(--zhihu-ai-summary-muted);
+  font-size: 12px;
+}
+
+.zhihu-ai-summary-box__body {
+  white-space: pre-wrap;
+}
+

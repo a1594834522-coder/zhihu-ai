@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zhihu AI Summary - Options</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial,
+          "Apple Color Emoji", "Segoe UI Emoji";
+        margin: 24px;
+        max-width: 720px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      input {
+        padding: 8px 10px;
+        font-size: 14px;
+      }
+      .hint {
+        color: rgba(0, 0, 0, 0.6);
+        font-size: 12px;
+        margin-top: -6px;
+        margin-bottom: 14px;
+      }
+      button {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+      .status {
+        margin-top: 10px;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Zhihu AI Summary</h1>
+
+    <div class="row">
+      <label for="openaiApiKey">OpenAI API Key</label>
+      <input id="openaiApiKey" type="password" autocomplete="off" placeholder="sk-..." />
+    </div>
+    <div class="hint">保存在 Chrome Sync Storage；如不想同步可改成 storage.local。</div>
+
+    <div class="row">
+      <label for="openaiBaseUrl">Base URL</label>
+      <input id="openaiBaseUrl" type="text" autocomplete="off" placeholder="https://api.openai.com" />
+    </div>
+    <div class="hint">填 `https://...` 或本地 `http://localhost:xxxx`；可填到根域或 `/v1`。</div>
+
+    <div class="row">
+      <label for="openaiModel">OpenAI Model</label>
+      <input id="openaiModel" type="text" autocomplete="off" placeholder="gpt-4o-mini" />
+    </div>
+
+    <button id="save">保存</button>
+    <div id="status" class="status"></div>
+
+    <script src="options.js"></script>
+  </body>
+</html>
