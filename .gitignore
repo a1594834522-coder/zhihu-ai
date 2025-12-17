@@ -15,7 +15,9 @@ build/
 *.crx
 *.zip
 
+# Chrome extension signing keys
+*.pem
+
 # Local env
 .env
 .env.*
-
