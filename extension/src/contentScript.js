@@ -1,12 +1,12 @@
 const SELECTORS = {
-  answerRoot: '.ContentItem.AnswerItem[itemtype="http://schema.org/Answer"]',
-  actions: '.ContentItem-actions',
+  // Some answers are lazily rendered / folded and may not have schema attributes immediately.
+  answerRoot: '.ContentItem.AnswerItem',
+  actions: '.ContentItem-actions, .RichContent-actions',
   richContent: '.RichContent',
   text: '[itemprop="text"]'
 };
 
 const DATA = {
-  mounted: 'zhihuAiSummaryMounted',
   btn: 'zhihuAiSummaryBtn',
   box: 'zhihuAiSummaryBox'
 };
@@ -29,12 +29,6 @@ function getAnswerText(answerEl) {
   if (!textEl) return '';
   const raw = textEl.innerText || textEl.textContent || '';
   return normalizeForAi(raw);
-}
-
-function findInsertAfter(actionsEl) {
-  const buttons = actionsEl.querySelectorAll('button');
-  if (!buttons.length) return null;
-  return buttons[0].parentElement?.parentElement?.querySelector('button') ?? buttons[0];
 }
 
 function createButton() {
@@ -83,9 +77,13 @@ function normalizeForAi(text) {
 }
 
 function mountOnAnswer(answerEl) {
-  if (answerEl.dataset[DATA.mounted]) return;
   const actionsEl = answerEl.querySelector(SELECTORS.actions);
   if (!actionsEl) return;
+
+  // Some answers are re-rendered in place (e.g. expand/collapse) and may lose injected nodes.
+  // Only skip if the button still exists.
+  const existingBtn = actionsEl.querySelector(`[data-${toKebab(DATA.btn)}="1"]`);
+  if (existingBtn) return;
 
   const btn = createButton();
   btn.addEventListener('click', async () => {
@@ -134,14 +132,7 @@ function mountOnAnswer(answerEl) {
     }
   });
 
-  const insertAfter = findInsertAfter(actionsEl);
-  if (insertAfter?.parentElement) {
-    insertAfter.parentElement.insertBefore(btn, insertAfter.nextSibling);
-  } else {
-    actionsEl.appendChild(btn);
-  }
-
-  answerEl.dataset[DATA.mounted] = '1';
+  actionsEl.appendChild(btn);
 }
 
 function toKebab(camel) {
@@ -157,14 +148,20 @@ function startObserver() {
   const observer = new MutationObserver(() => {
     scheduleScan();
   });
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class', 'style', 'hidden', 'aria-expanded']
+  });
 }
 
 let scanScheduled = false;
 function scheduleScan() {
   if (scanScheduled) return;
   scanScheduled = true;
-  queueMicrotask(() => {
+  // Use rAF so we run after DOM updates from expand/collapse interactions.
+  requestAnimationFrame(() => {
     scanScheduled = false;
     scanAndMount();
   });
@@ -172,3 +169,17 @@ function scheduleScan() {
 
 scanAndMount();
 startObserver();
+
+// Extra safety for "展开" interactions that only toggle attributes / re-render in place.
+document.addEventListener(
+  'click',
+  (e) => {
+    const target = e.target instanceof Element ? e.target : null;
+    if (!target) return;
+    if (target.closest('[aria-expanded], [data-zop-retract-question], .RichContent-collapsedText')) {
+      setTimeout(scheduleScan, 50);
+      setTimeout(scheduleScan, 400);
+    }
+  },
+  true
+);
